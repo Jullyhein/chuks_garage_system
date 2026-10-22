@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chuk's Car Services - Orçamento</title>
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+
+<div class="page-wrapper">
+  <div class="card">
+
+    <img src="images/chuks_logo.png" alt="Chuk's Car Services" class="logo">
+
+    <h1>Orçamento</h1>
+
+    <form id="formOrcamento">
+
+      <fieldset>
+        <legend>Veículo</legend>
+
+        <label for="chassi">Chassi (VIN):</label>
+        <input type="text" id="chassi" name="chassi"
+               minlength="17" maxlength="17"
+               pattern="[A-HJ-NPR-Za-hj-npr-z0-9]{17}"
+               placeholder="Digite o chassi com 17 caracteres. Ex: 9BWZZZ377VT004251"
+               title="O chassi deve ter exatamente 17 caracteres (letras e números, sem I, O e Q)"
+               autocapitalize="characters"
+               autocomplete="off"
+               required>
+        <p id="chassiInfo" class="contador" style="margin-top:-8px;"></p>
+
+        <label for="marca">Marca:</label>
+        <input type="text" id="marca" name="marca" required>
+
+        <label for="modelo">Modelo:</label>
+        <input type="text" id="modelo" name="modelo" required>
+
+        <label for="ano">Ano:</label>
+        <input type="text" id="ano" name="ano" inputmode="numeric"
+               pattern="[0-9]{4}" maxlength="4" placeholder="Ex: 2020">
+
+        <label for="cor">Cor:</label>
+        <input type="text" id="cor" name="cor">
+
+        <label for="placa">Placa:</label>
+        <input type="text" id="placa" name="placa" required>
+
+        <label for="prisma">Prisma (nº):</label>
+        <input type="text" id="prisma" name="prisma">
+
+        <label for="km">KM:</label>
+        <input type="number" id="km" name="km" min="0">
+      </fieldset>
+
+      <fieldset>
+        <legend>Datas</legend>
+
+        <label for="dataChegada">Data de chegada:</label>
+        <input type="date" id="dataChegada" name="dataChegada">
+
+        <label for="dataAberturaOS">Data de abertura da OS:</label>
+        <input type="date" id="dataAberturaOS" name="dataAberturaOS">
+      </fieldset>
+
+      <fieldset>
+        <legend>Serviço</legend>
+
+        <label for="reclamacoesCliente">Reclamações do cliente:</label>
+        <textarea id="reclamacoesCliente" name="reclamacoesCliente" rows="3"></textarea>
+
+        <label for="tipoServico">Tipo de serviço:</label>
+        <select id="tipoServico" name="tipoServico">
+          <option value="">Selecione</option>
+          <option>Mecânica</option>
+          <option>Elétrica</option>
+          <option>Funilaria</option>
+          <option>Pintura</option>
+          <option>Outro</option>
+        </select>
+
+        <label for="revisao">Revisão:</label>
+        <input type="text" id="revisao" name="revisao">
+
+        <label for="diagnostico">Diagnóstico:</label>
+        <textarea id="diagnostico" name="diagnostico" rows="3"></textarea>
+
+        <label for="garantia">Garantia:</label>
+        <input type="text" id="garantia" name="garantia" placeholder="Ex: 90 dias">
+
+        <label for="observacaoCliente">Observação do cliente:</label>
+        <textarea id="observacaoCliente" name="observacaoCliente" rows="2"></textarea>
+
+        <label for="servicoAFazer">Serviço que será feito:</label>
+        <textarea id="servicoAFazer" name="servicoAFazer" rows="3"></textarea>
+
+        <label for="responsavelTecnico">Responsável técnico:</label>
+        <input type="text" id="responsavelTecnico" name="responsavelTecnico">
+
+        <label for="problemasEnfrentados">Problemas enfrentados:</label>
+        <textarea id="problemasEnfrentados" name="problemasEnfrentados" rows="3"></textarea>
+      </fieldset>
+
+      <button type="submit">Salvar orçamento</button>
+    </form>
+
+    <p id="msg" class="msg"></p>
+
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('formOrcamento');
+  const msg = document.getElementById('msg');
+  const chassi = document.getElementById('chassi');
+  const chassiInfo = document.getElementById('chassiInfo');
+
+  function mostrarMsg(texto, ok) {
+      msg.textContent = texto;
+      msg.className = 'msg ' + (ok ? 'ok' : 'erro');
+  }
+
+  // ----- Chassi: 17 caracteres, só letras e números (sem I, O, Q) -----
+  function atualizarChassi() {
+      const total = chassi.value.length;
+      chassiInfo.textContent = total + ' / 17 caracteres';
+      chassiInfo.className = total === 17 ? 'contador ok' : 'contador';
+  }
+
+  chassi.addEventListener('input', function (e) {
+      e.target.value = e.target.value
+          .toUpperCase()
+          .replace(/[^A-HJ-NPR-Z0-9]/g, '')
+          .slice(0, 17);
+      atualizarChassi();
+  });
+
+  atualizarChassi();
+
+  // ----- Ano: só números -----
+  document.getElementById('ano').addEventListener('input', function (e) {
+      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
+  });
+
+  // ----- Envio -----
+  form.addEventListener('submit', async function (evento) {
+      evento.preventDefault();
+
+      const dados = Object.fromEntries(new FormData(form).entries());
+      // campos numéricos: vazio vira null
+      ['ano', 'km'].forEach(function (campo) {
+          dados[campo] = dados[campo] ? parseInt(dados[campo]) : null;
+      });
+
+      try {
+          const resposta = await fetch('/api/orcamentos', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(dados)
+          });
+
+          if (resposta.ok) {
+              mostrarMsg('Orçamento salvo com sucesso!', true);
+              form.reset();
+              atualizarChassi();
+          } else {
+              const erro = await resposta.json().catch(() => null);
+              mostrarMsg((erro && erro.erro) || 'Erro ao salvar o orçamento.', false);
+          }
+      } catch (erro) {
+          mostrarMsg('Erro de conexão: ' + erro, false);
+      }
+  });
+</script>
+
+</body>
+</html>
