@@ -43,3 +43,4 @@ firebase-key.json
 uploads/
 
 .properties
+application.properties
