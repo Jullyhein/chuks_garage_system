@@ -30,11 +30,10 @@ public class ChecklistController {
     private static final String COLECAO_CHECKLISTS = "checklists";
 
     private final ObjectMapper mapper = new ObjectMapper();
-    private final ChecklistEmailService emailService;
+    private final AssinaturaService assinaturaService;
 
-    // o Spring entrega o ChecklistEmailService pronto por aqui
-    public ChecklistController(ChecklistEmailService emailService) {
-        this.emailService = emailService;
+    public ChecklistController(AssinaturaService assinaturaService) {
+        this.assinaturaService = assinaturaService;
     }
 
     private Firestore db() {
@@ -43,8 +42,9 @@ public class ChecklistController {
 
     @InitBinder
     public void configurarBinder(WebDataBinder binder) {
-        // estes campos são preenchidos pelo código, não direto pelo formulário
-        binder.setDisallowedFields("fotos", "itens", "id");
+        binder.setDisallowedFields("fotos", "itens", "id",
+                "statusAssinatura", "tokenAssinatura", "assinaturaSolicitadaEm",
+                "ultimoLembreteEm", "lembretesEnviados", "assinadoEm", "arquivoAssinado");
     }
 
     // Tela inicial: busca os dados do cliente para preencher o checklist
@@ -100,10 +100,10 @@ public class ChecklistController {
         boolean emailEnviado = false;
         if (checklist.getEmail() != null && !checklist.getEmail().isBlank()) {
             try {
-                emailService.enviar(checklist);
+                assinaturaService.solicitar(checklist);   // gera token, envia PDF e e-mail
                 emailEnviado = true;
             } catch (Exception e) {
-                e.printStackTrace();   // mostra o erro completo no console
+                e.printStackTrace();
             }
         }
 
@@ -127,8 +127,10 @@ public class ChecklistController {
             return ResponseEntity.notFound().build();
         }
         try {
-            emailService.enviar(doc.toObject(Checklist.class));
+            assinaturaService.reenviar(doc.toObject(Checklist.class));
             return ResponseEntity.ok(Map.of("emailEnviado", true));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of("erro", "Falha ao enviar o e-mail."));

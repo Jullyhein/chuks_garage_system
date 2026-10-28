@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chuk's Car Services</title>
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            font-family: Arial, sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+            min-height: calc(100vh - 40px);
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+        }
+
+        /* Logo solta no topo, sem quadro */
+        .logo {
+            display: block;
+            max-width: 280px;
+            width: 100%;
+        }
+
+        /* Texto à esquerda, botão à direita */
+        .conteudo {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap; /* no celular o botão desce para baixo do texto */
+            align-items: center;
+            justify-content: space-between;
+            gap: 32px;
+        }
+
+        .texto {
+            flex: 1 1 320px;
+            max-width: 520px;
+        }
+
+        .texto h1 {
+            font-size: 26px;
+            color: #ffffff;
+            margin-bottom: 16px;
+        }
+
+        .texto p {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #cccccc;
+        }
+
+        .btn {
+            flex: 0 0 auto;
+            padding: 14px 32px;
+            background-color: #c0392b;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #a93226;
+        }
+
+        @media (max-width: 600px) {
+            .btn {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <img src="images/chuks_logo.png" alt="Chuk's Car Services" class="logo">
+
+    <div class="conteudo">
+
+        <div class="texto">
+            <h1>Bem-vindo!</h1>
+            <p>
+                Se você está aqui é sinal que precisa de nossa ajuda com seu carro.
+                Clique no botão ao lado e preencha o cadastro; assim que conseguirmos,
+                iremos te retornar para marcarmos uma data para analisarmos
+                o que precisa ser feito.
+            </p>
+        </div>
+
+        <!-- Troque o href se o nome/rota da sua página de Atendimento for outro -->
+        <a href="index.html" class="btn">Quero agendar para levar meu carro</a>
+
+    </div>
+
+</div>
+
+</body>
+</html>
