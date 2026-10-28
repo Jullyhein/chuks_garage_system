@@ -29,9 +29,9 @@ public class ChecklistEmailService {
     }
 
     // ------------------------------------------------------------------
-    // Envio
+    // Envio inicial: cópia do checklist + PDF anexo + link de assinatura
     // ------------------------------------------------------------------
-    public void enviar(Checklist c) throws Exception {
+    public void enviar(Checklist c, byte[] pdf, String linkAssinatura) throws Exception {
         MimeMessage mensagem = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mensagem, true, "UTF-8");
 
@@ -54,12 +54,33 @@ public class ChecklistEmailService {
         }
 
         // 2) o texto HTML precisa ser definido ANTES das imagens inline
-        helper.setText(montarHtml(c, fotos.size()), true);
+        helper.setText(montarHtml(c, fotos.size(), linkAssinatura), true);
 
         helper.addInline("logo", new ClassPathResource("static/images/chuks_logo.png"), "image/png");
         for (int i = 0; i < fotos.size(); i++) {
             helper.addInline("foto" + i, new ByteArrayResource(fotos.get(i)), "image/jpeg");
         }
+
+        // 3) PDF para o cliente assinar
+        helper.addAttachment(nomeArquivo(c), new ByteArrayResource(pdf), "application/pdf");
+
+        mailSender.send(mensagem);
+    }
+
+    // ------------------------------------------------------------------
+    // Lembrete de assinatura (enxuto: logo + aviso + PDF anexo)
+    // ------------------------------------------------------------------
+    public void enviarLembrete(Checklist c, byte[] pdf, String linkAssinatura) throws Exception {
+        MimeMessage mensagem = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mensagem, true, "UTF-8");
+
+        helper.setFrom(remetente, "Chuk's Car Services");
+        helper.setTo(c.getEmail());
+        helper.setSubject("Lembrete: assine o checklist do seu veículo - Chuk's Car Services");
+
+        helper.setText(montarHtmlLembrete(c, linkAssinatura), true);
+        helper.addInline("logo", new ClassPathResource("static/images/chuks_logo.png"), "image/png");
+        helper.addAttachment(nomeArquivo(c), new ByteArrayResource(pdf), "application/pdf");
 
         mailSender.send(mensagem);
     }
@@ -78,9 +99,9 @@ public class ChecklistEmailService {
     }
 
     // ------------------------------------------------------------------
-    // Corpo do e-mail
+    // Corpo do e-mail inicial
     // ------------------------------------------------------------------
-    private String montarHtml(Checklist c, int qtdFotos) {
+    private String montarHtml(Checklist c, int qtdFotos, String linkAssinatura) {
         String condicao = c.isVeioDeGuincho() ? "Veio de guincho"
                 : c.isEmFuncionamento() ? "Em funcionamento"
                 : "Não informado";
@@ -95,6 +116,9 @@ public class ChecklistEmailService {
                 .append("Olá, ").append(esc(c.getNomeCliente()))
                 .append("! Segue a cópia do registro de entrada do seu carro na oficina.</p>");
 
+        // pedido de assinatura
+        h.append(blocoAssinatura(linkAssinatura));
+
         // dados gerais
         h.append("<table style='width:100%;border-collapse:collapse;'>");
         linha(h, "Cliente", c.getNomeCliente());
@@ -104,7 +128,7 @@ public class ChecklistEmailService {
         linha(h, "Data da inspeção", formatarData(c.getDataInspecao()));
         linha(h, "Veículo", c.getVeiculo());
         linha(h, "Placa", c.getPlaca());
-        linha(h, "Nº do carro", c.getNumeroCarro());
+//        linha(h, "Nº do carro", c.getNumeroCarro());
         linha(h, "KM (odômetro)", c.getKmOdometro() == null ? "" : c.getKmOdometro() + " km");
         linha(h, "Nível de gasolina", c.getNivelGasolina());
         linha(h, "Condição do veículo", condicao);
@@ -133,9 +157,48 @@ public class ChecklistEmailService {
         }
 
         h.append("<p style='color:#888;font-size:12px;text-align:center;margin-top:24px;'>")
-                .append("Este é um e-mail automático, apenas para consulta.</p>");
+                .append("Este é um e-mail automático.</p>");
         h.append("</div></div>");
         return h.toString();
+    }
+
+    // ------------------------------------------------------------------
+    // Corpo do lembrete
+    // ------------------------------------------------------------------
+    private String montarHtmlLembrete(Checklist c, String linkAssinatura) {
+        StringBuilder h = new StringBuilder();
+        h.append("<div style='background:#1a1a1a;padding:24px;font-family:Arial,sans-serif;color:#e0e0e0;'>");
+        h.append("<div style='max-width:600px;margin:0 auto;background:#242424;border-radius:12px;padding:24px;'>");
+
+        h.append("<img src='cid:logo' alt=\"Chuk's Car Services\" style='display:block;max-width:200px;margin:0 auto 20px;'>");
+        h.append("<h2 style='color:#ffffff;text-align:center;margin:0 0 8px;'>Lembrete de assinatura</h2>");
+        h.append("<p style='text-align:center;color:#cccccc;margin:0 0 24px;'>")
+                .append("Olá, ").append(esc(c.getNomeCliente()))
+                .append("! Ainda não recebemos assinado o checklist do seu veículo ")
+                .append(esc(c.getVeiculo()))
+                .append(". O PDF está anexo a este e-mail.</p>");
+
+        h.append(blocoAssinatura(linkAssinatura));
+
+        h.append("<p style='color:#888;font-size:12px;text-align:center;margin-top:24px;'>")
+                .append("Este é um e-mail automático.</p>");
+        h.append("</div></div>");
+        return h.toString();
+    }
+
+    // ------------------------------------------------------------------
+    // Bloco com as instruções de assinatura
+    // ------------------------------------------------------------------
+    private String blocoAssinatura(String link) {
+        return "<div style='background:#2e2e2e;border-left:4px solid #c0392b;padding:14px;margin:0 0 24px;border-radius:6px;'>"
+                + "<p style='margin:0 0 8px;color:#ffffff;font-weight:bold;'>Assinatura do cliente</p>"
+                + "<p style='margin:0 0 8px;color:#cccccc;font-size:14px;'>"
+                + "Para confirmar que você conferiu o registro, assine o PDF anexo com a sua conta gov.br "
+                + "(nível prata ou ouro) em assinador.iti.br e envie o arquivo assinado pelo botão abaixo.</p>"
+                + "<p style='margin:12px 0 0;'><a href='" + esc(link) + "' "
+                + "style='display:inline-block;background:#c0392b;color:#ffffff;padding:10px 18px;"
+                + "border-radius:6px;text-decoration:none;font-weight:bold;'>Ver instruções e enviar assinado</a></p>"
+                + "</div>";
     }
 
     // ------------------------------------------------------------------
@@ -195,6 +258,11 @@ public class ChecklistEmailService {
                 .append(rotulo).append("</td>")
                 .append("<td style='padding:8px;border-bottom:1px solid #444;color:#ffffff;'>")
                 .append(esc(valor)).append("</td></tr>");
+    }
+
+    private String nomeArquivo(Checklist c) {
+        String placa = c.getPlaca() == null ? "" : c.getPlaca().replaceAll("[^A-Za-z0-9]", "");
+        return "checklist-" + (placa.isEmpty() ? "veiculo" : placa) + ".pdf";
     }
 
     // 2026-10-21 -> 21/10/2026 (se não estiver nesse formato, devolve como veio)

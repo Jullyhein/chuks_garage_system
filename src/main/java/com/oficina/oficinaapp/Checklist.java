@@ -1,5 +1,5 @@
 package com.oficina.oficinaapp;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class Checklist {
     // dados do veículo
     private String veiculo;
     private String placa;
-    private String numeroCarro;
+    //private String numeroCarro;
     private Integer kmOdometro;
     private String nivelGasolina;
     private String dataInspecao;          // formato 2026-10-21
@@ -25,6 +25,15 @@ public class Checklist {
     // condições gerais
     private boolean emFuncionamento;
     private boolean veioDeGuincho;
+
+    // assinatura (gov.br)
+    private String statusAssinatura;        // PENDENTE ou ASSINADO
+    private String tokenAssinatura;         // segredo do link do cliente
+    private Long assinaturaSolicitadaEm;    // milissegundos
+    private Long ultimoLembreteEm;
+    private int lembretesEnviados;
+    private Long assinadoEm;
+    private String arquivoAssinado;
 
     // inspeção visual e fotos
     private List<ItemInspecao> itens = new ArrayList<>();
@@ -56,8 +65,8 @@ public class Checklist {
     public String getPlaca() { return placa; }
     public void setPlaca(String placa) { this.placa = placa; }
 
-    public String getNumeroCarro() { return numeroCarro; }
-    public void setNumeroCarro(String numeroCarro) { this.numeroCarro = numeroCarro; }
+//    public String getNumeroCarro() { return numeroCarro; }
+//    public void setNumeroCarro(String numeroCarro) { this.numeroCarro = numeroCarro; }
 
     public Integer getKmOdometro() { return kmOdometro; }
     public void setKmOdometro(Integer kmOdometro) { this.kmOdometro = kmOdometro; }
@@ -79,4 +88,27 @@ public class Checklist {
 
     public List<String> getFotos() { return fotos; }
     public void setFotos(List<String> fotos) { this.fotos = fotos; }
+
+    public String getStatusAssinatura() { return statusAssinatura; }
+    public void setStatusAssinatura(String statusAssinatura) { this.statusAssinatura = statusAssinatura; }
+
+    @JsonIgnore
+    public String getTokenAssinatura() { return tokenAssinatura; }
+    public void setTokenAssinatura(String tokenAssinatura) { this.tokenAssinatura = tokenAssinatura; }
+
+    public Long getAssinaturaSolicitadaEm() { return assinaturaSolicitadaEm; }
+    public void setAssinaturaSolicitadaEm(Long assinaturaSolicitadaEm) { this.assinaturaSolicitadaEm = assinaturaSolicitadaEm; }
+
+    public Long getUltimoLembreteEm() { return ultimoLembreteEm; }
+    public void setUltimoLembreteEm(Long ultimoLembreteEm) { this.ultimoLembreteEm = ultimoLembreteEm; }
+
+    public int getLembretesEnviados() { return lembretesEnviados; }
+    public void setLembretesEnviados(int lembretesEnviados) { this.lembretesEnviados = lembretesEnviados; }
+
+    public Long getAssinadoEm() { return assinadoEm; }
+    public void setAssinadoEm(Long assinadoEm) { this.assinadoEm = assinadoEm; }
+
+    @JsonIgnore
+    public String getArquivoAssinado() { return arquivoAssinado; }
+    public void setArquivoAssinado(String arquivoAssinado) { this.arquivoAssinado = arquivoAssinado; }
 }

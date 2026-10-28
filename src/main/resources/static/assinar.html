@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Chuk's Car Services - Assinatura do Checklist</title>
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+
+<div class="page-wrapper">
+  <div class="card">
+
+    <img src="images/chuks_logo.png" alt="Chuk's Car Services" class="logo">
+
+    <h1>Assinatura do Checklist</h1>
+
+    <p id="saudacao" style="text-align:center;margin-bottom:20px;"></p>
+
+    <div id="conteudo" hidden>
+
+      <ol style="margin:0 0 20px 20px;line-height:1.7;font-size:14px;">
+        <li>Baixe o PDF do checklist (botão abaixo).</li>
+        <li>Acesse
+          <a href="https://assinador.iti.br" target="_blank" rel="noopener noreferrer"
+             style="color:#e74c3c;">assinador.iti.br</a>
+          e entre com a sua conta gov.br (nível prata ou ouro).</li>
+        <li>Escolha o PDF, arraste a assinatura para o espaço no final do documento
+          e confirme no aplicativo gov.br do celular.</li>
+        <li>Baixe o PDF assinado e envie aqui embaixo.</li>
+      </ol>
+
+      <button type="button" class="btn-sec" id="btnBaixar">📄 Baixar PDF do checklist</button>
+
+      <form id="formAssinado" style="margin-top:16px;">
+        <label for="arquivo">PDF assinado:</label>
+        <input type="file" id="arquivo" accept="application/pdf" required>
+        <button type="submit" id="btnEnviar">Enviar PDF assinado</button>
+      </form>
+    </div>
+
+    <p id="msg" class="msg"></p>
+
+  </div>
+</div>
+
+<script>
+  const token = new URLSearchParams(location.search).get('token');
+  const msg = document.getElementById('msg');
+  const conteudo = document.getElementById('conteudo');
+  const saudacao = document.getElementById('saudacao');
+  const btnEnviar = document.getElementById('btnEnviar');
+
+  function mostrarMsg(texto, ok) {
+      msg.textContent = texto;
+      msg.className = 'msg ' + (ok ? 'ok' : 'erro');
+  }
+
+  async function carregar() {
+      if (!token) {
+          mostrarMsg('Link inválido.', false);
+          return;
+      }
+      try {
+          const resposta = await fetch('/api/assinaturas/' + encodeURIComponent(token));
+          if (!resposta.ok) {
+              mostrarMsg('Link inválido ou expirado.', false);
+              return;
+          }
+          const d = await resposta.json();
+
+          // textContent: nunca insere dados do servidor como HTML
+          saudacao.textContent = 'Olá, ' + d.nome + '! Veículo: ' + d.veiculo +
+              (d.placa ? ' (' + d.placa + ')' : '');
+
+          if (d.assinado) {
+              mostrarMsg('Este checklist já foi assinado. Obrigado!', true);
+          } else {
+              conteudo.hidden = false;
+          }
+      } catch (erro) {
+          mostrarMsg('Erro de conexão: ' + erro, false);
+      }
+  }
+
+  document.getElementById('btnBaixar').addEventListener('click', function () {
+      location.href = '/api/assinaturas/' + encodeURIComponent(token) + '/pdf';
+  });
+
+  document.getElementById('formAssinado').addEventListener('submit', async function (evento) {
+      evento.preventDefault();
+
+      const arquivo = document.getElementById('arquivo').files[0];
+      if (!arquivo) {
+          mostrarMsg('Escolha o PDF assinado.', false);
+          return;
+      }
+
+      const dados = new FormData();
+      dados.append('arquivo', arquivo);
+
+      btnEnviar.disabled = true;
+      try {
+          const resposta = await fetch('/api/assinaturas/' + encodeURIComponent(token),
+              { method: 'POST', body: dados });
+
+          if (resposta.ok) {
+              conteudo.hidden = true;
+              mostrarMsg('Assinatura recebida! Obrigado.', true);
+          } else {
+              const erro = await resposta.json().catch(() => null);
+              mostrarMsg((erro && erro.erro) || 'Não foi possível enviar o arquivo.', false);
+              btnEnviar.disabled = false;
+          }
+      } catch (erro) {
+          mostrarMsg('Erro de conexão: ' + erro, false);
+          btnEnviar.disabled = false;
+      }
+  });
+
+  carregar();
+</script>
+
+</body>
+</html>
