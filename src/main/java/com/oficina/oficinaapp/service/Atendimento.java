@@ -1,4 +1,4 @@
-package com.oficina.oficinaapp;
+package com.oficina.oficinaapp.service;
 
 public class Atendimento {
 

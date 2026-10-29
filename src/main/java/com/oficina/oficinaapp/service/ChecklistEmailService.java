@@ -1,4 +1,4 @@
-package com.oficina.oficinaapp;
+package com.oficina.oficinaapp.service;
 
 import jakarta.mail.internet.MimeMessage;
 import net.coobird.thumbnailator.Thumbnails;

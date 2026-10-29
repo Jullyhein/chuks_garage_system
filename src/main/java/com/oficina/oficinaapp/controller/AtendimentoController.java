@@ -1,11 +1,11 @@
-package com.oficina.oficinaapp;
+package com.oficina.oficinaapp.controller;
 
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.firebase.cloud.FirestoreClient;
+import com.oficina.oficinaapp.service.Atendimento;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @RestController

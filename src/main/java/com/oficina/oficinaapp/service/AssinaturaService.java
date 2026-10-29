@@ -1,4 +1,4 @@
-package com.oficina.oficinaapp;
+package com.oficina.oficinaapp.service;
 
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;

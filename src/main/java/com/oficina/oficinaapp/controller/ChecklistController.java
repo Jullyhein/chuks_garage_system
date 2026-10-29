@@ -1,4 +1,4 @@
-package com.oficina.oficinaapp;
+package com.oficina.oficinaapp.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,6 +6,9 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.firebase.cloud.FirestoreClient;
+import com.oficina.oficinaapp.service.AssinaturaService;
+import com.oficina.oficinaapp.service.Checklist;
+import com.oficina.oficinaapp.service.ItemInspecao;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chuk's Car Services - Cadastro</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #1a1a1a;
+            font-family: Arial, sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            background-color: #242424;
+            border-radius: 12px;
+            padding: 32px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo { display: block; max-width: 220px; width: 100%; margin: 0 auto 24px auto; }
+
+        h1 { font-size: 20px; text-align: center; margin-bottom: 8px; color: #ffffff; }
+
+        .sub { font-size: 14px; text-align: center; color: #cccccc; margin-bottom: 24px; line-height: 1.5; }
+
+        label { display: block; margin-bottom: 6px; font-size: 14px; color: #cccccc; }
+
+        input[type="text"], input[type="email"], input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+            border: 1px solid #444;
+            border-radius: 6px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            background-color: #c0392b;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover { background-color: #a93226; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .erro { color: #ff6b6b; font-size: 14px; text-align: center; margin-top: 12px; min-height: 18px; }
+
+        @media (max-width: 400px) { .card { padding: 20px; } }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <img src="images/chuks_logo.png" alt="Chuk's Car Services" class="logo">
+
+    <h1>Cadastro do Cliente</h1>
+    <p class="sub">Preencha seus dados. Vamos enviar um código de verificação para o seu e-mail.</p>
+
+    <form id="formCadastro">
+
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" maxlength="120" required>
+
+        <label for="endereco">Endereço:</label>
+        <input type="text" id="endereco" name="endereco" maxlength="250" required>
+
+        <label for="telefone">Telefone (com DDD):</label>
+        <input type="tel" id="telefone" name="telefone" inputmode="numeric"
+               maxlength="11" placeholder="Ex: 11999999999" required>
+
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" name="email" placeholder="seuemail@exemplo.com" required>
+
+        <button type="submit" id="btnEnviar">Enviar código</button>
+        <p class="erro" id="erro"></p>
+
+    </form>
+
+</div>
+
+<script>
+    // Telefone: só números, até 11 dígitos
+    document.getElementById('telefone').addEventListener('input', function (e) {
+        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
+    });
+
+    document.getElementById('formCadastro').addEventListener('submit', async function (evento) {
+        evento.preventDefault();
+
+        const erro = document.getElementById('erro');
+        const botao = document.getElementById('btnEnviar');
+        erro.textContent = '';
+
+        const telefone = document.getElementById('telefone').value;
+        if (telefone.length < 10) {
+            erro.textContent = 'Informe o telefone com DDD.';
+            return;
+        }
+
+        const dados = {
+            nome: document.getElementById('nome').value,
+            endereco: document.getElementById('endereco').value,
+            telefone: telefone,
+            email: document.getElementById('email').value
+        };
+
+        botao.disabled = true;
+        botao.textContent = 'Enviando...';
+
+        try {
+            const resposta = await fetch('/api/clientes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+
+            if (resposta.ok) {
+                sessionStorage.setItem('emailCadastro', dados.email.trim().toLowerCase());
+                window.location.href = 'validar.html';
+                return;
+            }
+            erro.textContent = 'Não foi possível enviar o código. Confira os dados e tente novamente.';
+        } catch (e) {
+            erro.textContent = 'Erro de conexão. Tente novamente.';
+        }
+
+        botao.disabled = false;
+        botao.textContent = 'Enviar código';
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chuk's Car Services - Validar e-mail</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #1a1a1a;
+            font-family: Arial, sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            background-color: #242424;
+            border-radius: 12px;
+            padding: 32px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo { display: block; max-width: 220px; width: 100%; margin: 0 auto 24px auto; }
+
+        h1 { font-size: 20px; text-align: center; margin-bottom: 8px; color: #ffffff; }
+
+        .sub { font-size: 14px; text-align: center; color: #cccccc; margin-bottom: 24px; line-height: 1.5; }
+
+        label { display: block; margin-bottom: 6px; font-size: 14px; color: #cccccc; }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #444;
+            border-radius: 6px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-size: 22px;
+            letter-spacing: 8px;
+            text-align: center;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            background-color: #c0392b;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover { background-color: #a93226; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .secundario { background: transparent; border: 1px solid #555; color: #cccccc; font-size: 14px; }
+        .secundario:hover { background: #2e2e2e; }
+
+        .msg { font-size: 14px; text-align: center; margin-top: 12px; min-height: 18px; }
+        .msg.erro { color: #ff6b6b; }
+        .msg.ok { color: #6bd68a; }
+
+        @media (max-width: 400px) { .card { padding: 20px; } }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <img src="images/chuks_logo.png" alt="Chuk's Car Services" class="logo">
+
+    <h1>Confirme seu e-mail</h1>
+    <p class="sub">Enviamos um código de 6 dígitos para <strong id="emailMostrado"></strong>.
+        Ele vale por 10 minutos.</p>
+
+    <form id="formToken">
+
+        <label for="token">Código de verificação:</label>
+        <input type="text" id="token" name="token" inputmode="numeric" maxlength="6"
+               autocomplete="one-time-code" placeholder="000000" required>
+
+        <button type="submit" id="btnValidar">Validar</button>
+        <button type="button" id="btnReenviar" class="secundario">Reenviar código</button>
+
+        <p class="msg" id="msg"></p>
+
+    </form>
+
+</div>
+
+<script>
+    const email = sessionStorage.getItem('emailCadastro');
+
+    // Sem e-mail guardado = não passou pelo cadastro
+    if (!email) {
+        window.location.href = 'cadastro.html';
+    }
+
+    document.getElementById('emailMostrado').textContent = email || '';
+
+    const msg = document.getElementById('msg');
+
+    function mostrar(texto, tipo) {
+        msg.textContent = texto;
+        msg.className = 'msg ' + tipo;
+    }
+
+    // Só números no código
+    document.getElementById('token').addEventListener('input', function (e) {
+        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
+    });
+
+    document.getElementById('formToken').addEventListener('submit', async function (evento) {
+        evento.preventDefault();
+
+        const botao = document.getElementById('btnValidar');
+        const token = document.getElementById('token').value;
+
+        if (token.length !== 6) {
+            mostrar('Digite os 6 dígitos do código.', 'erro');
+            return;
+        }
+
+        botao.disabled = true;
+        mostrar('', '');
+
+        try {
+            const resposta = await fetch('/api/clientes/validar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, token: token })
+            });
+
+            if (resposta.ok) {
+                sessionStorage.removeItem('emailCadastro');
+                window.location.href = 'atendimento.html';
+                return;
+            }
+            mostrar('Código inválido ou expirado.', 'erro');
+        } catch (e) {
+            mostrar('Erro de conexão. Tente novamente.', 'erro');
+        }
+
+        botao.disabled = false;
+    });
+
+    document.getElementById('btnReenviar').addEventListener('click', async function () {
+        const botao = document.getElementById('btnReenviar');
+        botao.disabled = true;
+        mostrar('', '');
+
+        try {
+            const resposta = await fetch('/api/clientes/reenviar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email })
+            });
+
+            if (resposta.ok) {
+                mostrar('Novo código enviado para o seu e-mail.', 'ok');
+            } else {
+                mostrar('Aguarde 1 minuto para pedir um novo código.', 'erro');
+            }
+        } catch (e) {
+            mostrar('Erro de conexão. Tente novamente.', 'erro');
+        }
+
+        setTimeout(function () { botao.disabled = false; }, 60000);
+    });
+</script>
+
+</body>
+</html>
