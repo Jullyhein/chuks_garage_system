@@ -1,5 +1,8 @@
 package com.oficina.oficinaapp.service;
 
+import com.oficina.oficinaapp.model.Checklist;
+import com.oficina.oficinaapp.model.ItemInspecao;
+
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;

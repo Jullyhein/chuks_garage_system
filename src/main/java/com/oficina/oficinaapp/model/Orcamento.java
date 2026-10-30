@@ -1,4 +1,4 @@
-package com.oficina.oficinaapp.service;
+package com.oficina.oficinaapp.model;
 
 public class Orcamento {
 

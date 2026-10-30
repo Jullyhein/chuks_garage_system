@@ -1,440 +1,182 @@
-<!doctype html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Chuk's Car Services - Checklist do Veículo</title>
-    <link rel="stylesheet" href="css/estilo.css">
-</head>
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checklist - Chuk's Car Services</title><link rel="stylesheet" href="css/erp.css"></head>
 <body>
+<div class="topo" id="topo"></div>
 
-<div class="page-wrapper">
-    <div class="card">
+<div class="modal">
+  <header><h1>Checklist do veículo</h1><a class="fechar" href="index.html">&#10005;</a></header>
+  <div class="corpo">
+    <div class="col">
+      <h2 class="sec">Atendimento</h2>
+      <div class="linha"><label>Preencher a partir do atendimento</label>
+        <select class="g" id="atendimentoId"><option value="">Selecione (opcional)</option></select></div>
 
-        <img src="images/chuks_logo.png" alt="Chuk's Car Services" class="logo">
+      <h2 class="sec">Dados do cliente</h2>
+      <div class="linha"><label>Cliente</label><input class="g" id="nomeCliente"></div>
+      <div class="linha"><label>Endereço</label><input class="g" id="endereco"></div>
+      <div class="linha"><label>E-mail (recebe o PDF para assinar)</label><input class="g" id="email" type="email"></div>
+      <div class="linha"><label>Telefone</label><input class="m" id="telefone"></div>
 
-        <h1>Checklist do Veículo</h1>
-
-        <form id="formChecklist">
-            <input type="hidden" name="atendimentoId" id="atendimentoId">
-
-            <fieldset>
-                <legend>Dados do cliente</legend>
-
-                <label for="nomeCliente">Nome:</label>
-                <input type="text" id="nomeCliente" name="nomeCliente" required>
-
-                <label for="endereco">Endereço:</label>
-                <input type="text" id="endereco" name="endereco">
-
-                <label for="email">E-mail (o cliente receberá uma cópia do checklist):</label>
-                <input type="email" id="email" name="email" required>
-
-                <label for="telefone">Telefone:</label>
-                <input type="tel" id="telefone" name="telefone" required>
-            </fieldset>
-
-            <fieldset>
-                <legend>Veículo</legend>
-
-                <label for="dataInspecao">Data:</label>
-                <input type="date" id="dataInspecao" name="dataInspecao" required>
-
-                <label for="veiculo">Veículo:</label>
-                <input type="text" id="veiculo" name="veiculo" required>
-
-                <label for="placa">Placa:</label>
-                <input type="text" id="placa" name="placa" maxlength="8" required>
-
-                <label for="numeroCarro">Nº do carro:</label>
-                <input type="text" id="numeroCarro" name="numeroCarro" required>
-
-                <label for="kmOdometro">KM (odômetro):</label>
-                <input type="number" id="kmOdometro" name="kmOdometro" min="0" required>
-
-                <label for="nivelGasolina">Nível de gasolina:</label>
-                <select id="nivelGasolina" name="nivelGasolina" required>
-                    <option value="">Selecione</option>
-                    <option>Vazio</option>
-                    <option>1/4</option>
-                    <option>1/2</option>
-                    <option>3/4</option>
-                    <option>Cheio</option>
-                </select>
-            </fieldset>
-
-            <fieldset>
-                <legend>Condições gerais (escolha uma)</legend>
-
-                <div class="opcao">
-                    <input type="radio" id="condFunc" name="condicao" value="funcionamento" required>
-                    <label for="condFunc">Veículo em funcionamento</label>
-                </div>
-
-                <div class="opcao">
-                    <input type="radio" id="condGuincho" name="condicao" value="guincho">
-                    <label for="condGuincho">Veio de guincho</label>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>Inspeção visual (👍 conforme / 👎 problema)</legend>
-
-                <div class="resumo-inspecao">
-                    <span id="progresso"></span>
-                    <button type="button" class="btn-sec" id="btnTodosOk">👍 Marcar todos como OK</button>
-                </div>
-
-                <div id="inspecao"></div>
-            </fieldset>
-
-            <fieldset>
-                <legend>Fotos do veículo (mínimo 10, máximo 11)</legend>
-
-                <button type="button" class="btn-sec" id="btnCamera">📷 Tirar foto</button>
-                <button type="button" class="btn-sec" id="btnGaleria">🖼️ Escolher da galeria</button>
-
-                <input type="file" id="fotoCamera" accept="image/*" capture="environment" hidden>
-                <input type="file" id="fotoGaleria" accept="image/*" multiple hidden>
-
-                <p id="contador" class="contador"></p>
-                <div id="previews"></div>
-            </fieldset>
-
-            <button type="submit">Salvar checklist</button>
-        </form>
-
-        <p id="msg" class="msg"></p>
-
+      <h2 class="sec">Dados do veículo</h2>
+      <div class="linha"><label>Veículo</label><input class="g" id="veiculo"></div>
+      <div class="linha"><label>Placa</label><input class="m" id="placa" maxlength="8"></div>
+      <div class="linha"><label>KM (odômetro)</label><input class="m" id="kmOdometro" type="number" min="0"><span class="badge">km</span></div>
+      <div class="linha"><label>Nível de gasolina</label>
+        <select class="m" id="nivelGasolina"><option value="">Selecione</option>
+          <option>Reserva</option><option>1/4</option><option>1/2</option><option>3/4</option><option>Cheio</option></select></div>
+      <div class="linha"><label>Data da inspeção</label><input class="m" id="dataInspecao" type="date"></div>
+      <div class="linha"><label><input type="checkbox" id="emFuncionamento"> Em funcionamento</label>
+        <label><input type="checkbox" id="veioDeGuincho"> Veio de guincho</label></div>
     </div>
+
+    <div class="col">
+      <h2 class="sec">Inspeção visual</h2>
+      <table class="lista" id="itens">
+        <thead><tr><th>Seção</th><th>Descrição</th><th>Status</th><th>Obs.</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="linha"><button class="sec2" id="addItem">+ Adicionar item</button></div>
+
+      <h2 class="sec">Fotos do veículo (2 a 11)</h2>
+      <div class="linha"><input type="file" id="fotos" accept="image/*" multiple style="background:#fff;border-color:#ccc"></div>
+      <div class="linha"><label id="qtdFotos">Nenhuma foto selecionada</label></div>
+    </div>
+  </div>
+  <div class="rodape"><span id="msg"></span>
+    <button class="sec2" id="novo">Novo</button><button id="salvar">Salvar e enviar para assinatura</button></div>
 </div>
 
+<div class="modal">
+  <header><h1>Checklists e assinaturas</h1></header>
+  <div class="corpo uma"><div class="col">
+    <table class="lista"><thead><tr><th>Data</th><th>Cliente</th><th>Veículo</th><th>Placa</th><th>Assinatura</th><th></th></tr></thead>
+    <tbody id="lista"></tbody></table></div></div>
+</div>
+
+<script src="erp.js"></script>
 <script>
-    const MIN_FOTOS = 2;
-    const MAX_FOTOS = 11;
+menu("checklist.html");
 
-    // ---------- Itens da inspeção (baseados na NBR 14624) ----------
-    const SECOES = [
-        { nome: 'Internos', itens: [
-            'Limpador e lavador de para-brisa',
-            'Extintor - opcional',
-            'Buzina',
-            'Cinto de segurança',
-            'Freio de estacionamento',
-            'Volante e coluna',
-            'Acionamento do sistema de embreagem'
-        ]},
-        { nome: 'Externos', itens: [
-            'Triângulo de segurança',
-            'Estepe',
-            'Luz indicadora de direção (seta)',
-            'Luz de freio',
-            'Luz de posição (lanterna)',
-            'Luz de ré',
-            'Luz de placa traseira',
-            'Luz dos faróis principais'
-        ]},
-        { nome: 'Compartimentos do motor', itens: [
-            'Nível do reservatório do fluido de freio',
-            'Nível do reservatório do líquido de arrefecimento',
-            'Correias e tensores',
-            'Vazamentos',
-            'Bateria (utilizar voltímetro)',
-            'Cabo de ignição',
-            'Alternador (utilizar voltímetro)',
-            'Luz de anomalia (quando existente)',
-            'Climatização (ar quente e frio)'
-        ]},
-        { nome: 'Inferiores', itens: [
-            'Estado geral de fixação das rodas',
-            'Desgaste da banda de rodagem (TWI)',
-            'Amortecedores',
-            'Bandejas, braços, pivôs, coifas e batentes'
-        ]}
-    ];
+const PADRAO = [
+  ["Lataria e pintura", "Frente (para-choque, capô, faróis)"], ["Lataria e pintura", "Laterais e portas"],
+  ["Lataria e pintura", "Traseira (porta-malas, lanternas)"], ["Pneus e rodas", "Pneus e calotas/rodas"],
+  ["Interior", "Bancos e forrações"], ["Interior", "Painel e luzes de alerta"], ["Vidros", "Para-brisa e vidros laterais"]
+];
+const tbody = document.querySelector("#itens tbody");
+const emF = document.getElementById("emFuncionamento"), guincho = document.getElementById("veioDeGuincho");
+const selAtend = document.getElementById("atendimentoId");
 
-    const OPCIONAIS = [2]; // nº dos itens que podem ficar sem resposta (extintor)
+// ---------- inspeção ----------
+function addLinha(secao, descricao) {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td><input class="s" style="width:110px"></td>
+    <td><input class="d" style="width:160px"></td>
+    <td><select class="st"><option value="OK">OK</option><option value="PROBLEMA">Problema</option></select></td>
+    <td><input class="o" style="width:110px"></td>
+    <td><button class="sec2 x" type="button">&#10005;</button></td>`;
+  tr.querySelector(".s").value = secao || ""; tr.querySelector(".d").value = descricao || "";
+  tr.querySelector(".st").onchange = e => e.target.classList.toggle("rosa", e.target.value === "PROBLEMA");
+  tr.querySelector(".x").onclick = () => tr.remove();
+  tbody.appendChild(tr);
+}
+function itensPadrao() { tbody.innerHTML = ""; PADRAO.forEach(([s, d]) => addLinha(s, d)); }
+document.getElementById("addItem").onclick = () => addLinha("", "");
+itensPadrao();
 
-    const form = document.getElementById('formChecklist');
-    const msg = document.getElementById('msg');
-    const previews = document.getElementById('previews');
-    const contador = document.getElementById('contador');
-    const fotoCamera = document.getElementById('fotoCamera');
-    const fotoGaleria = document.getElementById('fotoGaleria');
-    const inspecao = document.getElementById('inspecao');
-    const progresso = document.getElementById('progresso');
+// condição: só uma das duas (o backend também recusa as duas juntas)
+emF.onchange = () => { if (emF.checked) guincho.checked = false; };
+guincho.onchange = () => { if (guincho.checked) emF.checked = false; };
 
-    let fotosSelecionadas = [];
+document.getElementById("fotos").onchange = e => {
+  const n = e.target.files.length;
+  document.getElementById("qtdFotos").textContent = n ? n + " foto(s) selecionada(s)" : "Nenhuma foto selecionada";
+};
 
-    function mostrarMsg(texto, ok) {
-        msg.textContent = texto;
-        msg.className = 'msg ' + (ok ? 'ok' : 'erro');
-    }
+// ---------- pré-preenchimento pelo atendimento ----------
+async function preencherDoAtendimento(id) {
+  if (!id) return;
+  try {
+    const d = await pegarJson("/api/checklists/cliente/" + encodeURIComponent(id));
+    ["nomeCliente", "endereco", "email", "telefone", "veiculo"].forEach(c => { if (d[c]) set(c, d[c]); });
+  } catch { msg("Não foi possível carregar os dados do atendimento.", "erro"); }
+}
+selAtend.onchange = () => preencherDoAtendimento(selAtend.value);
 
-    // ---------- Data de hoje (horário local) ----------
-    function definirData() {
-        const h = new Date();
-        document.getElementById('dataInspecao').value =
-            h.getFullYear() + '-' +
-            String(h.getMonth() + 1).padStart(2, '0') + '-' +
-            String(h.getDate()).padStart(2, '0');
-    }
-    definirData();
+function formatarData(iso) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(iso || "") ? iso.split("-").reverse().join("/") : (iso || "");
+}
 
-    // placa sempre em maiúsculas
-    document.getElementById('placa').addEventListener('input', function (e) {
-        e.target.value = e.target.value.toUpperCase();
-    });
+// ---------- listas ----------
+async function carregar() {
+  let checklists = [];
+  try {
+    const [cs, ats] = await Promise.all([pegarJson("/api/clientes"), pegarJson("/api/atendimentos")]);
+    const nomes = Object.fromEntries(cs.map(c => [c.id, c.nome]));
+    const atual = selAtend.value;
+    selAtend.innerHTML = '<option value="">Selecione (opcional)</option>' +
+      ats.sort((a, b) => (b.dataAgendamento || "").localeCompare(a.dataAgendamento || ""))
+        .map(a => `<option value="${esc(a.id)}">${esc(formatarData(a.dataAgendamento))} - ${esc(nomes[a.clienteId] || "?")} - ${esc([a.marca, a.carro].filter(Boolean).join(" "))}</option>`).join("");
+    selAtend.value = atual;
+    checklists = await pegarJson("/api/checklists");
+  } catch { msg("Não foi possível carregar as listas.", "erro"); }
 
-    // ---------- Dados do cliente (tela inicial) ----------
-    const atendimentoId = new URLSearchParams(location.search).get('atendimentoId');
-    document.getElementById('atendimentoId').value = atendimentoId || '';
+  checklists.sort((a, b) => (b.dataInspecao || "").localeCompare(a.dataInspecao || ""));
+  document.getElementById("lista").innerHTML = checklists.map(c => {
+    const assinado = c.statusAssinatura === "ASSINADO";
+    const status = assinado ? '<b style="color:#1e8449">Assinado</b>'
+      : c.statusAssinatura === "PENDENTE" ? '<b style="color:#c0392b">Pendente (' + (c.lembretesEnviados || 0) + ' lembrete(s))</b>'
+      : "Sem pedido";
+    return `<tr><td>${esc(formatarData(c.dataInspecao))}</td><td>${esc(c.nomeCliente)}</td><td>${esc(c.veiculo)}</td>
+      <td>${esc(c.placa)}</td><td>${status}</td>
+      <td>${assinado ? "" : `<button class="sec2 reenviar" data-id="${esc(c.id)}">Reenviar e-mail</button>`}</td></tr>`;
+  }).join("") || '<tr><td colspan="6">Nenhum checklist.</td></tr>';
 
-    if (atendimentoId) {
-        fetch('/api/checklists/cliente/' + atendimentoId)
-            .then(r => r.ok ? r.json() : Promise.reject())
-            .then(d => {
-                document.getElementById('nomeCliente').value = d.nome || '';
-                document.getElementById('email').value = d.email || '';
-                document.getElementById('veiculo').value =
-                    [d.marca, d.carro, d.ano].filter(Boolean).join(' ');
-            })
-            .catch(() => mostrarMsg('Não foi possível carregar os dados do cliente.', false));
-    }
+  document.querySelectorAll("button.reenviar").forEach(b => b.onclick = async () => {
+    b.disabled = true; msg("");
+    try { await enviarJson("/api/checklists/" + b.dataset.id + "/reenviar-email", "POST", {}); msg("E-mail reenviado.", "ok"); carregar(); }
+    catch (err) { msg(err.message, "erro"); b.disabled = false; }
+  });
+}
 
-    // ---------- Inspeção visual ----------
-    function criarLinha(numero, secao, descricao, ehOutros, uid) {
-        const linha = document.createElement('div');
-        linha.className = 'item';
-        linha.dataset.numero = numero;
-        linha.dataset.secao = secao;
-        linha.dataset.descricao = descricao;
+// ---------- novo / salvar ----------
+function limpar() {
+  ["atendimentoId","nomeCliente","endereco","email","telefone","veiculo","placa","kmOdometro","nivelGasolina","dataInspecao"]
+    .forEach(id => set(id, ""));
+  emF.checked = guincho.checked = false;
+  document.getElementById("fotos").value = ""; document.getElementById("qtdFotos").textContent = "Nenhuma foto selecionada";
+  itensPadrao(); msg("");
+}
+document.getElementById("novo").onclick = limpar;
 
-        const titulo = ehOutros
-            ? '<input type="text" class="outros-desc" maxlength="80" placeholder="Outros (descreva o item, se houver)">'
-            : '<span class="num">' + numero + '</span>' + descricao;
+document.getElementById("salvar").onclick = async e => {
+  e.target.disabled = true; msg("Enviando...");
+  try {
+    const itens = [...tbody.querySelectorAll("tr")].map((tr, i) => ({
+      numero: i + 1, secao: tr.querySelector(".s").value.trim(), descricao: tr.querySelector(".d").value.trim(),
+      status: tr.querySelector(".st").value, obs: tr.querySelector(".o").value.trim() }))
+      .filter(i => i.descricao);
+    if (!itens.length) throw new Error("Preencha ao menos um item da inspeção.");
 
-        linha.innerHTML =
-            '<div class="item-titulo">' + titulo + '</div>' +
-            '<div class="item-acoes">' +
-                '<input type="radio" id="ok-' + uid + '" name="st-' + uid + '" value="OK">' +
-                '<label for="ok-' + uid + '" class="opt ok" title="Conforme">👍</label>' +
-                '<input type="radio" id="pr-' + uid + '" name="st-' + uid + '" value="PROBLEMA">' +
-                '<label for="pr-' + uid + '" class="opt ruim" title="Problema">👎</label>' +
-                '<input type="text" class="obs" maxlength="200" placeholder="OBS">' +
-            '</div>';
-        return linha;
-    }
+    const f = new FormData();
+    ["nomeCliente","endereco","email","telefone","veiculo","placa","kmOdometro","nivelGasolina","dataInspecao","atendimentoId"]
+      .forEach(id => { if (val(id) !== "") f.append(id, val(id)); });
+    f.append("emFuncionamento", emF.checked); f.append("veioDeGuincho", guincho.checked);
+    f.append("itensJson", JSON.stringify(itens));
+    [...document.getElementById("fotos").files].forEach(file => f.append("fotos", file));
 
-    function montarInspecao() {
-        let numero = 0;
-        SECOES.forEach(function (secao, indice) {
-            const bloco = document.createElement('div');
-            bloco.className = 'secao';
-            bloco.innerHTML = '<h3>' + secao.nome + '</h3>';
+    const r = await fetch("/api/checklists", { method: "POST", body: f });
+    const d = await lerResposta(r);
+    if (!r.ok) throw new Error(d.erro || d.message || "Erro " + r.status);
+    msg(d.emailEnviado ? "Checklist salvo e e-mail enviado ao cliente." : "Checklist salvo, mas o e-mail não foi enviado (use Reenviar e-mail).", "ok");
+    carregar();
+  } catch (err) { msg(err.message, "erro"); }
+  e.target.disabled = false;
+};
 
-            secao.itens.forEach(function (descricao) {
-                numero++;
-                bloco.appendChild(criarLinha(numero, secao.nome, descricao, false, numero));
-            });
-
-            bloco.appendChild(criarLinha(0, secao.nome, '', true, 'o' + indice));
-            inspecao.appendChild(bloco);
-        });
-        atualizarProgresso();
-    }
-
-    function atualizarProgresso() {
-        const linhas = document.querySelectorAll('.item:not([data-numero="0"])');
-        let feitos = 0;
-        linhas.forEach(function (l) {
-            if (l.querySelector('input[type=radio]:checked')) feitos++;
-        });
-        progresso.textContent = feitos + ' de ' + linhas.length + ' itens verificados';
-    }
-
-    // qualquer mudança na inspeção: atualiza contador e tira o destaque de pendência
-    inspecao.addEventListener('input', function (e) {
-        const linha = e.target.closest('.item');
-        if (linha) linha.classList.remove('pendente');
-        atualizarProgresso();
-    });
-
-    document.getElementById('btnTodosOk').addEventListener('click', function () {
-        document.querySelectorAll('.item:not([data-numero="0"])').forEach(function (l) {
-            if (!l.querySelector('input[type=radio]:checked')) {
-                l.querySelector('input[value="OK"]').checked = true;
-                l.classList.remove('pendente');
-            }
-        });
-        atualizarProgresso();
-    });
-
-    // lê as linhas, monta a lista e aponta o que está faltando
-    function coletarItens() {
-        const itens = [];
-        const pendencias = [];
-
-        document.querySelectorAll('.item').forEach(function (linha) {
-            linha.classList.remove('pendente');
-
-            const numero = Number(linha.dataset.numero);
-            const nome = numero === 0 ? 'Outros' : 'Item ' + numero;
-            const marcado = linha.querySelector('input[type=radio]:checked');
-            const status = marcado ? marcado.value : null;
-            const obs = linha.querySelector('.obs').value.trim();
-            let descricao = linha.dataset.descricao;
-
-            if (numero === 0) {
-                const texto = linha.querySelector('.outros-desc').value.trim();
-                if (!texto && !status && !obs) return;          // linha "Outros" vazia
-                if (!texto) {
-                    pendencias.push({ linha: linha, motivo: nome + ': descreva o item' });
-                    return;
-                }
-                descricao = 'Outros: ' + texto;
-            }
-
-            if (!status) {
-                if (OPCIONAIS.includes(numero)) return;          // opcional sem resposta: ignora
-                pendencias.push({ linha: linha, motivo: nome + ': marque 👍 ou 👎' });
-                return;
-            }
-
-            if (status === 'PROBLEMA' && !obs) {
-                pendencias.push({ linha: linha, motivo: nome + ': descreva o problema no OBS' });
-                return;
-            }
-
-            itens.push({
-                numero: numero,
-                secao: linha.dataset.secao,
-                descricao: descricao,
-                status: status,
-                obs: obs
-            });
-        });
-
-        return { itens: itens, pendencias: pendencias };
-    }
-
-    montarInspecao();
-
-    // ---------- Fotos ----------
-    function renderizarFotos() {
-        previews.innerHTML = '';
-
-        fotosSelecionadas.forEach(function (arquivo, indice) {
-            const div = document.createElement('div');
-            div.className = 'thumb';
-
-            const img = document.createElement('img');
-            img.src = URL.createObjectURL(arquivo);
-
-            const remover = document.createElement('button');
-            remover.type = 'button';
-            remover.className = 'thumb-remover';
-            remover.textContent = '×';
-            remover.addEventListener('click', function () {
-                fotosSelecionadas.splice(indice, 1);
-                renderizarFotos();
-            });
-
-            div.appendChild(img);
-            div.appendChild(remover);
-            previews.appendChild(div);
-        });
-
-        const total = fotosSelecionadas.length;
-        contador.textContent = total + ' de ' + MAX_FOTOS + ' fotos (mínimo ' + MIN_FOTOS + ')';
-        contador.className = total >= MIN_FOTOS ? 'contador ok' : 'contador';
-    }
-
-    function adicionarFotos(lista) {
-        let passouDoLimite = false;
-
-        Array.from(lista).forEach(function (arquivo) {
-            if (fotosSelecionadas.length >= MAX_FOTOS) {
-                passouDoLimite = true;
-                return;
-            }
-            fotosSelecionadas.push(arquivo);
-        });
-
-        if (passouDoLimite) {
-            alert('Máximo de ' + MAX_FOTOS + ' fotos. As que passaram do limite foram ignoradas.');
-        }
-        renderizarFotos();
-    }
-
-    document.getElementById('btnCamera').addEventListener('click', () => fotoCamera.click());
-    document.getElementById('btnGaleria').addEventListener('click', () => fotoGaleria.click());
-
-    [fotoCamera, fotoGaleria].forEach(function (input) {
-        input.addEventListener('change', function () {
-            adicionarFotos(input.files);
-            input.value = '';
-        });
-    });
-
-    renderizarFotos();
-
-    // ---------- Envio ----------
-    form.addEventListener('submit', async function (evento) {
-        evento.preventDefault();
-
-        if (fotosSelecionadas.length < MIN_FOTOS) {
-            mostrarMsg('Faltam fotos: envie no mínimo ' + MIN_FOTOS +
-                ' (você tem ' + fotosSelecionadas.length + ').', false);
-            return;
-        }
-
-        const coleta = coletarItens();
-        if (coleta.pendencias.length > 0) {
-            coleta.pendencias.forEach(p => p.linha.classList.add('pendente'));
-            coleta.pendencias[0].linha.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            mostrarMsg(coleta.pendencias.length + ' pendência(s) na inspeção. Primeira: ' +
-                coleta.pendencias[0].motivo + '.', false);
-            return;
-        }
-
-        const dados = new FormData(form);
-
-        const condicao = dados.get('condicao');
-        dados.delete('condicao');
-        dados.set('emFuncionamento', condicao === 'funcionamento' ? 'true' : 'false');
-        dados.set('veioDeGuincho', condicao === 'guincho' ? 'true' : 'false');
-
-        dados.append('itensJson', JSON.stringify(coleta.itens));
-
-        fotosSelecionadas.forEach(function (arquivo) {
-            dados.append('fotos', arquivo);
-        });
-
-        try {
-            const resposta = await fetch('/api/checklists', { method: 'POST', body: dados });
-
-            if (resposta.ok) {
-                const resultado = await resposta.json();
-                if (resultado.emailEnviado) {
-                    mostrarMsg('Checklist salvo e enviado por e-mail ao cliente!', true);
-                } else {
-                    mostrarMsg('Checklist salvo, mas o e-mail NÃO foi enviado. Confira o endereço de e-mail.', false);
-                }
-                form.reset();
-                fotosSelecionadas = [];
-                renderizarFotos();
-                definirData();
-                atualizarProgresso();
-            } else {
-                const erro = await resposta.json().catch(() => null);
-                mostrarMsg((erro && erro.erro) || 'Erro ao salvar o checklist.', false);
-            }
-        } catch (erro) {
-            mostrarMsg('Erro de conexão: ' + erro, false);
-        }
-    });
+carregar().then(() => {
+  const id = new URLSearchParams(location.search).get("atendimento");
+  if (id) { selAtend.value = id; preencherDoAtendimento(id); }
+});
 </script>
-
-</body>
-</html>
+</body></html>

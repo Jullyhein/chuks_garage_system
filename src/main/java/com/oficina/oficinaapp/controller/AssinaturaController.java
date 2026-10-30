@@ -1,7 +1,7 @@
 package com.oficina.oficinaapp.controller;
 
 import com.oficina.oficinaapp.service.AssinaturaService;
-import com.oficina.oficinaapp.service.Checklist;
+import com.oficina.oficinaapp.model.Checklist;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

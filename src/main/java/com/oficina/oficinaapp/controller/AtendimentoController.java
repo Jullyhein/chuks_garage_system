@@ -1,30 +1,41 @@
 package com.oficina.oficinaapp.controller;
 
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.firebase.cloud.FirestoreClient;
-import com.oficina.oficinaapp.service.Atendimento;
+import com.oficina.oficinaapp.model.Atendimento;
+import com.oficina.oficinaapp.service.AtendimentoService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.concurrent.ExecutionException;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/atendimentos")
 public class AtendimentoController {
-    @PostMapping
-    public String criarAtendimento(@RequestBody Atendimento atendimento)
-        throws ExecutionException, InterruptedException{
 
-        //Regra de negócio: se o pagamento for crédito, marca o acréscimo
-        boolean credito = "CREDITO".equalsIgnoreCase(atendimento.getPagamento());
-        atendimento.setAcrescimoCredito(credito);
+    private final AtendimentoService service;
 
-        Firestore db = FirestoreClient.getFirestore();
-
-        DocumentReference docRef = db.collection("atendimentos").document();
-        docRef.set(atendimento).get(); //espera a gravação terminar
-
-        return "Atendimento salvo com sucesso! ID: " + docRef.getId();
+    public AtendimentoController(AtendimentoService service) {
+        this.service = service;
     }
 
+    @PostMapping
+    public ResponseEntity<?> criarAtendimento(@RequestBody Atendimento atendimento) throws Exception {
+        try {
+            String id = service.criar(atendimento);
+            return ResponseEntity.ok("Atendimento salvo com sucesso! ID: " + id);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
+        }
+    }
+
+    @GetMapping
+    public List<Atendimento> listar() throws Exception {
+        return service.listar();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Atendimento> buscar(@PathVariable String id) throws Exception {
+        Atendimento a = service.buscar(id);
+        return a == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(a);
+    }
 }

@@ -1,4 +1,4 @@
-package com.oficina.oficinaapp.service;
+package com.oficina.oficinaapp.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;

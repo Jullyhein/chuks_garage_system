@@ -1,5 +1,7 @@
 package com.oficina.oficinaapp.service;
 
+import com.oficina.oficinaapp.model.Checklist;
+
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.firebase.cloud.FirestoreClient;

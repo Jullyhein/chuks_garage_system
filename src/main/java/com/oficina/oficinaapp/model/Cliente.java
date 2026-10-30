@@ -1,20 +1,18 @@
 package com.oficina.oficinaapp.model;
+
 import com.google.cloud.firestore.annotation.DocumentId;
 
 public class Cliente {
 
     @DocumentId
-    private String id;
+    private String id;                 // gerado pelo Firestore
 
     private String nome;
     private String endereco;
     private String telefone;
-    private String email;
+    private String email;              // usado para enviar o checklist para assinatura
 
-    private boolean verificado;
-    private String tokenHash;
-    private long tokenExpiraEm; // milissegundos (epoch)
-    private int tentativas;
+    private long cadastradoEm;         // milissegundos (epoch)
 
     public Cliente() {
     }
@@ -34,15 +32,6 @@ public class Cliente {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public boolean isVerificado() { return verificado; }
-    public void setVerificado(boolean verificado) { this.verificado = verificado; }
-
-    public String getTokenHash() { return tokenHash; }
-    public void setTokenHash(String tokenHash) { this.tokenHash = tokenHash; }
-
-    public long getTokenExpiraEm() { return tokenExpiraEm; }
-    public void setTokenExpiraEm(long tokenExpiraEm) { this.tokenExpiraEm = tokenExpiraEm; }
-
-    public int getTentativas() { return tentativas; }
-    public void setTentativas(int tentativas) { this.tentativas = tentativas; }
+    public long getCadastradoEm() { return cadastradoEm; }
+    public void setCadastradoEm(long cadastradoEm) { this.cadastradoEm = cadastradoEm; }
 }
