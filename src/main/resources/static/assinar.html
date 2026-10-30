@@ -1,126 +1,53 @@
-<!doctype html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="referrer" content="no-referrer">
-  <title>Chuk's Car Services - Assinatura do Checklist</title>
-  <link rel="stylesheet" href="css/estilo.css">
-</head>
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assinar checklist - Chuk's Car Services</title><link rel="stylesheet" href="css/erp.css"></head>
 <body>
-
-<div class="page-wrapper">
-  <div class="card">
-
-    <img src="images/chuks_logo.png" alt="Chuk's Car Services" class="logo">
-
-    <h1>Assinatura do Checklist</h1>
-
-    <p id="saudacao" style="text-align:center;margin-bottom:20px;"></p>
-
-    <div id="conteudo" hidden>
-
-      <ol style="margin:0 0 20px 20px;line-height:1.7;font-size:14px;">
-        <li>Baixe o PDF do checklist (botão abaixo).</li>
-        <li>Acesse
-          <a href="https://assinador.iti.br" target="_blank" rel="noopener noreferrer"
-             style="color:#e74c3c;">assinador.iti.br</a>
-          e entre com a sua conta gov.br (nível prata ou ouro).</li>
-        <li>Escolha o PDF, arraste a assinatura para o espaço no final do documento
-          e confirme no aplicativo gov.br do celular.</li>
-        <li>Baixe o PDF assinado e envie aqui embaixo.</li>
-      </ol>
-
-      <button type="button" class="btn-sec" id="btnBaixar">📄 Baixar PDF do checklist</button>
-
-      <form id="formAssinado" style="margin-top:16px;">
-        <label for="arquivo">PDF assinado:</label>
-        <input type="file" id="arquivo" accept="application/pdf" required>
-        <button type="submit" id="btnEnviar">Enviar PDF assinado</button>
-      </form>
+<div class="modal">
+  <header><h1>Assinatura do checklist</h1></header>
+  <div class="corpo" id="conteudo">
+    <div class="col">
+      <h2 class="sec">Seu checklist</h2>
+      <div class="linha"><label>Cliente</label><input class="g cinza" id="nome" readonly></div>
+      <div class="linha"><label>Veículo</label><input class="g cinza" id="veiculo" readonly></div>
+      <div class="linha"><label>Placa</label><input class="m cinza" id="placa" readonly></div>
+      <div class="linha"><span></span><a class="btn sec2" id="baixar">Baixar PDF do checklist</a></div>
     </div>
-
-    <p id="msg" class="msg"></p>
-
+    <div class="col">
+      <h2 class="sec">Como assinar</h2>
+      <div class="linha"><label>1. Baixe o PDF ao lado (ou use o anexo do e-mail).</label></div>
+      <div class="linha"><label>2. Acesse <b>assinador.iti.br</b> e assine com sua conta gov.br (nível prata ou ouro).</label></div>
+      <div class="linha"><label>3. Envie aqui o PDF já assinado:</label></div>
+      <div class="linha"><input type="file" id="arquivo" accept="application/pdf" style="background:#fff;border-color:#ccc"></div>
+      <div class="linha"><span></span><button id="enviar">Enviar PDF assinado</button></div>
+    </div>
   </div>
+  <div class="rodape"><span id="msg"></span></div>
 </div>
-
+<script src="erp.js"></script>
 <script>
-  const token = new URLSearchParams(location.search).get('token');
-  const msg = document.getElementById('msg');
-  const conteudo = document.getElementById('conteudo');
-  const saudacao = document.getElementById('saudacao');
-  const btnEnviar = document.getElementById('btnEnviar');
+const token = new URLSearchParams(location.search).get("token") || "";
+const base = "/api/assinaturas/" + encodeURIComponent(token);
 
-  function mostrarMsg(texto, ok) {
-      msg.textContent = texto;
-      msg.className = 'msg ' + (ok ? 'ok' : 'erro');
-  }
+fetch(base).then(async r => {
+  if (!r.ok) { document.getElementById("conteudo").innerHTML =
+    '<div class="col"><p>Link inválido ou expirado. Peça um novo e-mail à oficina.</p></div>'; return; }
+  const d = await r.json();
+  set("nome", d.nome); set("veiculo", d.veiculo); set("placa", d.placa);
+  document.getElementById("baixar").href = base + "/pdf";
+  if (d.assinado) { document.getElementById("enviar").disabled = true; msg("Este checklist já foi assinado. Obrigado!", "ok"); }
+});
 
-  async function carregar() {
-      if (!token) {
-          mostrarMsg('Link inválido.', false);
-          return;
-      }
-      try {
-          const resposta = await fetch('/api/assinaturas/' + encodeURIComponent(token));
-          if (!resposta.ok) {
-              mostrarMsg('Link inválido ou expirado.', false);
-              return;
-          }
-          const d = await resposta.json();
-
-          // textContent: nunca insere dados do servidor como HTML
-          saudacao.textContent = 'Olá, ' + d.nome + '! Veículo: ' + d.veiculo +
-              (d.placa ? ' (' + d.placa + ')' : '');
-
-          if (d.assinado) {
-              mostrarMsg('Este checklist já foi assinado. Obrigado!', true);
-          } else {
-              conteudo.hidden = false;
-          }
-      } catch (erro) {
-          mostrarMsg('Erro de conexão: ' + erro, false);
-      }
-  }
-
-  document.getElementById('btnBaixar').addEventListener('click', function () {
-      location.href = '/api/assinaturas/' + encodeURIComponent(token) + '/pdf';
-  });
-
-  document.getElementById('formAssinado').addEventListener('submit', async function (evento) {
-      evento.preventDefault();
-
-      const arquivo = document.getElementById('arquivo').files[0];
-      if (!arquivo) {
-          mostrarMsg('Escolha o PDF assinado.', false);
-          return;
-      }
-
-      const dados = new FormData();
-      dados.append('arquivo', arquivo);
-
-      btnEnviar.disabled = true;
-      try {
-          const resposta = await fetch('/api/assinaturas/' + encodeURIComponent(token),
-              { method: 'POST', body: dados });
-
-          if (resposta.ok) {
-              conteudo.hidden = true;
-              mostrarMsg('Assinatura recebida! Obrigado.', true);
-          } else {
-              const erro = await resposta.json().catch(() => null);
-              mostrarMsg((erro && erro.erro) || 'Não foi possível enviar o arquivo.', false);
-              btnEnviar.disabled = false;
-          }
-      } catch (erro) {
-          mostrarMsg('Erro de conexão: ' + erro, false);
-          btnEnviar.disabled = false;
-      }
-  });
-
-  carregar();
+document.getElementById("enviar").onclick = async e => {
+  const arq = document.getElementById("arquivo").files[0];
+  if (!arq) { msg("Selecione o PDF assinado.", "erro"); return; }
+  e.target.disabled = true; msg("Enviando...");
+  try {
+    const f = new FormData(); f.append("arquivo", arq);
+    const r = await fetch(base, { method: "POST", body: f });
+    const d = await lerResposta(r);
+    if (!r.ok) throw new Error(d.erro || "Erro " + r.status);
+    msg("Assinatura recebida. Obrigado!", "ok");
+  } catch (err) { msg(err.message, "erro"); e.target.disabled = false; }
+};
 </script>
-
-</body>
-</html>
+</body></html>

@@ -1,5 +1,6 @@
-package com.oficina.oficinaapp;
+package com.oficina.oficinaapp.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
 

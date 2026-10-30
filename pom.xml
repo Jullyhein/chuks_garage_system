@@ -51,6 +51,33 @@
             <artifactId>openpdf</artifactId>
             <version>2.0.3</version>
         </dependency>
+
+        <!-- Adicione dentro de <dependencies> do seu pom.xml (Spring Boot 3.x / Java 17+) -->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Validação (@Valid, @Email, @Pattern...) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- Envio de e-mail -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <!-- Firebase Admin SDK (inclui o Firestore). Confira a versão mais recente no Maven Central. -->
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>9.4.3</version>
+        </dependency>
+
     </dependencies>
 
     <build>

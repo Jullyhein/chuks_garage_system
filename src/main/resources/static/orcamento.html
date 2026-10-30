@@ -1,178 +1,83 @@
-<!doctype html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Chuk's Car Services - Orçamento</title>
-  <link rel="stylesheet" href="css/estilo.css">
-</head>
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orçamento - Chuk's Car Services</title><link rel="stylesheet" href="css/erp.css"></head>
 <body>
-
-<div class="page-wrapper">
-  <div class="card">
-
-    <img src="images/chuks_logo.png" alt="Chuk's Car Services" class="logo">
-
-    <h1>Orçamento</h1>
-
-    <form id="formOrcamento">
-
-      <fieldset>
-        <legend>Veículo</legend>
-
-        <label for="chassi">Chassi (VIN):</label>
-        <input type="text" id="chassi" name="chassi"
-               minlength="17" maxlength="17"
-               pattern="[A-HJ-NPR-Za-hj-npr-z0-9]{17}"
-               placeholder="Digite o chassi com 17 caracteres. Ex: 9BWZZZ377VT004251"
-               title="O chassi deve ter exatamente 17 caracteres (letras e números, sem I, O e Q)"
-               autocapitalize="characters"
-               autocomplete="off"
-               required>
-        <p id="chassiInfo" class="contador" style="margin-top:-8px;"></p>
-
-        <label for="marca">Marca:</label>
-        <input type="text" id="marca" name="marca" required>
-
-        <label for="modelo">Modelo:</label>
-        <input type="text" id="modelo" name="modelo" required>
-
-        <label for="ano">Ano:</label>
-        <input type="text" id="ano" name="ano" inputmode="numeric"
-               pattern="[0-9]{4}" maxlength="4" placeholder="Ex: 2020">
-
-        <label for="cor">Cor:</label>
-        <input type="text" id="cor" name="cor">
-
-        <label for="placa">Placa:</label>
-        <input type="text" id="placa" name="placa" required>
-
-        <label for="prisma">Prisma (nº):</label>
-        <input type="text" id="prisma" name="prisma">
-
-        <label for="km">KM:</label>
-        <input type="number" id="km" name="km" min="0">
-      </fieldset>
-
-      <fieldset>
-        <legend>Datas</legend>
-
-        <label for="dataChegada">Data de chegada:</label>
-        <input type="date" id="dataChegada" name="dataChegada">
-
-        <label for="dataAberturaOS">Data de abertura da OS:</label>
-        <input type="date" id="dataAberturaOS" name="dataAberturaOS">
-      </fieldset>
-
-      <fieldset>
-        <legend>Serviço</legend>
-
-        <label for="reclamacoesCliente">Reclamações do cliente:</label>
-        <textarea id="reclamacoesCliente" name="reclamacoesCliente" rows="3"></textarea>
-
-        <label for="tipoServico">Tipo de serviço:</label>
-        <select id="tipoServico" name="tipoServico">
-          <option value="">Selecione</option>
-          <option>Mecânica</option>
-          <option>Elétrica</option>
-          <option>Funilaria</option>
-          <option>Pintura</option>
-          <option>Outro</option>
-        </select>
-
-        <label for="revisao">Revisão:</label>
-        <input type="text" id="revisao" name="revisao">
-
-        <label for="diagnostico">Diagnóstico:</label>
-        <textarea id="diagnostico" name="diagnostico" rows="3"></textarea>
-
-        <label for="garantia">Garantia:</label>
-        <input type="text" id="garantia" name="garantia" placeholder="Ex: 90 dias">
-
-        <label for="observacaoCliente">Observação do cliente:</label>
-        <textarea id="observacaoCliente" name="observacaoCliente" rows="2"></textarea>
-
-        <label for="servicoAFazer">Serviço que será feito:</label>
-        <textarea id="servicoAFazer" name="servicoAFazer" rows="3"></textarea>
-
-        <label for="responsavelTecnico">Responsável técnico:</label>
-        <input type="text" id="responsavelTecnico" name="responsavelTecnico">
-
-        <label for="problemasEnfrentados">Problemas enfrentados:</label>
-        <textarea id="problemasEnfrentados" name="problemasEnfrentados" rows="3"></textarea>
-      </fieldset>
-
-      <button type="submit">Salvar orçamento</button>
-    </form>
-
-    <p id="msg" class="msg"></p>
-
+<div class="topo" id="topo"></div>
+<div class="modal">
+  <header><h1>Orçamento / Ordem de serviço</h1><a class="fechar" href="index.html">&#10005;</a></header>
+  <div class="corpo">
+    <div class="col">
+      <h2 class="sec">Identificação do veículo</h2>
+      <div class="linha"><label>Chassi (17 caracteres)</label><input class="g" id="chassi" maxlength="17" style="text-transform:uppercase"></div>
+      <div class="linha"><label>Marca</label><input class="m" id="marca"></div>
+      <div class="linha"><label>Modelo</label><input class="m" id="modelo"></div>
+      <div class="linha"><label>Ano</label><input class="p" id="ano" type="number"></div>
+      <div class="linha"><label>Cor</label><input class="m" id="cor"></div>
+      <div class="linha"><label>Placa</label><input class="m" id="placa" maxlength="8"></div>
+      <div class="linha"><label>Nº do prisma</label><input class="m" id="prisma"></div>
+      <div class="linha"><label>KM</label><input class="m" id="km" type="number"><span class="badge">km</span></div>
+      <div class="linha"><label>Data de chegada</label><input class="m" id="dataChegada" type="date"></div>
+      <div class="linha"><label>Abertura da OS</label><input class="m" id="dataAberturaOS" type="date"></div>
+    </div>
+    <div class="col">
+      <h2 class="sec">Serviço</h2>
+      <div class="linha"><label>Tipo de serviço</label><input class="m" id="tipoServico"></div>
+      <div class="linha"><label>Revisão</label><input class="m" id="revisao"></div>
+      <div class="linha"><label>Garantia</label><input class="m" id="garantia"></div>
+      <div class="linha"><label>Responsável técnico</label><input class="m" id="responsavelTecnico"></div>
+      <div class="linha"><label>Reclamações do cliente</label></div><textarea id="reclamacoesCliente"></textarea>
+      <div class="linha"><label>Diagnóstico</label></div><textarea id="diagnostico"></textarea>
+      <div class="linha"><label>Serviço a fazer</label></div><textarea id="servicoAFazer"></textarea>
+      <div class="linha"><label>Observação do cliente</label></div><textarea id="observacaoCliente"></textarea>
+      <div class="linha"><label>Problemas enfrentados</label></div><textarea id="problemasEnfrentados"></textarea>
+    </div>
   </div>
+  <div class="rodape"><span id="msg"></span>
+    <button class="sec2" id="novo">Novo</button><button id="salvar">Salvar orçamento</button></div>
 </div>
 
+<div class="modal">
+  <header><h1>Orçamentos salvos</h1></header>
+  <div class="corpo uma"><div class="col">
+    <table class="lista"><thead><tr><th>Chassi</th><th>Veículo</th><th>Placa</th><th>Chegada</th><th>Tipo</th></tr></thead>
+    <tbody id="lista"></tbody></table></div></div>
+</div>
+
+<script src="erp.js"></script>
 <script>
-  const form = document.getElementById('formOrcamento');
-  const msg = document.getElementById('msg');
-  const chassi = document.getElementById('chassi');
-  const chassiInfo = document.getElementById('chassiInfo');
+menu("orcamento.html");
+const TEXTOS = ["chassi","modelo","cor","marca","placa","prisma","dataChegada","dataAberturaOS","reclamacoesCliente",
+  "tipoServico","revisao","diagnostico","garantia","observacaoCliente","servicoAFazer","responsavelTecnico","problemasEnfrentados"];
+const NUMEROS = ["ano","km"];
+let idAtual = null, cache = [];
 
-  function mostrarMsg(texto, ok) {
-      msg.textContent = texto;
-      msg.className = 'msg ' + (ok ? 'ok' : 'erro');
-  }
+function preencher(o) {
+  idAtual = o ? o.id : null;
+  [...TEXTOS, ...NUMEROS].forEach(id => set(id, o ? o[id] : ""));
+  msg(idAtual ? "Editando orçamento salvo." : "", "");
+}
 
-  // ----- Chassi: 17 caracteres, só letras e números (sem I, O, Q) -----
-  function atualizarChassi() {
-      const total = chassi.value.length;
-      chassiInfo.textContent = total + ' / 17 caracteres';
-      chassiInfo.className = total === 17 ? 'contador ok' : 'contador';
-  }
+async function carregar() {
+  const r = await fetch("/api/orcamentos"); cache = r.ok ? await r.json() : [];
+  document.getElementById("lista").innerHTML = cache.map((o, i) =>
+    `<tr class="clic" data-i="${i}"><td>${esc(o.chassi)}</td><td>${esc([o.marca, o.modelo, o.ano].filter(Boolean).join(" "))}</td>
+     <td>${esc(o.placa)}</td><td>${esc(o.dataChegada)}</td><td>${esc(o.tipoServico)}</td></tr>`).join("")
+     || '<tr><td colspan="5">Nenhum orçamento salvo.</td></tr>';
+  document.querySelectorAll("#lista tr.clic").forEach(tr => tr.onclick = () => { preencher(cache[tr.dataset.i]); scrollTo(0, 0); });
+}
 
-  chassi.addEventListener('input', function (e) {
-      e.target.value = e.target.value
-          .toUpperCase()
-          .replace(/[^A-HJ-NPR-Z0-9]/g, '')
-          .slice(0, 17);
-      atualizarChassi();
-  });
-
-  atualizarChassi();
-
-  // ----- Ano: só números -----
-  document.getElementById('ano').addEventListener('input', function (e) {
-      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
-  });
-
-  // ----- Envio -----
-  form.addEventListener('submit', async function (evento) {
-      evento.preventDefault();
-
-      const dados = Object.fromEntries(new FormData(form).entries());
-      // campos numéricos: vazio vira null
-      ['ano', 'km'].forEach(function (campo) {
-          dados[campo] = dados[campo] ? parseInt(dados[campo]) : null;
-      });
-
-      try {
-          const resposta = await fetch('/api/orcamentos', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(dados)
-          });
-
-          if (resposta.ok) {
-              mostrarMsg('Orçamento salvo com sucesso!', true);
-              form.reset();
-              atualizarChassi();
-          } else {
-              const erro = await resposta.json().catch(() => null);
-              mostrarMsg((erro && erro.erro) || 'Erro ao salvar o orçamento.', false);
-          }
-      } catch (erro) {
-          mostrarMsg('Erro de conexão: ' + erro, false);
-      }
-  });
+document.getElementById("novo").onclick = () => preencher(null);
+document.getElementById("salvar").onclick = async e => {
+  e.target.disabled = true; msg("");
+  try {
+    const corpo = {};
+    TEXTOS.forEach(id => corpo[id] = val(id));
+    NUMEROS.forEach(id => corpo[id] = val(id) === "" ? null : Number(val(id)));
+    const salvo = await enviarJson(idAtual ? "/api/orcamentos/" + idAtual : "/api/orcamentos", idAtual ? "PUT" : "POST", corpo);
+    idAtual = salvo.id; msg("Orçamento salvo.", "ok"); carregar();
+  } catch (err) { msg(err.message, "erro"); }
+  e.target.disabled = false;
+};
+carregar();
 </script>
-
-</body>
-</html>
+</body></html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atendimento - Chuk's Car Services</title><link rel="stylesheet" href="css/erp.css"></head>
+<body>
+<div class="topo" id="topo"></div>
+
+<div class="modal">
+  <header><h1>Atendimento</h1><a class="fechar" href="index.html">&#10005;</a></header>
+  <div class="corpo">
+    <div class="col">
+      <h2 class="sec">Cliente e veículo</h2>
+      <div class="linha"><label>Cliente</label><select class="g" id="clienteId"><option value="">Selecione o cliente</option></select></div>
+      <div class="linha"><label></label><a href="cliente.html">+ Cadastrar novo cliente</a></div>
+      <div class="linha"><label>Marca</label><input class="m" id="marca"></div>
+      <div class="linha"><label>Carro (modelo)</label><input class="m" id="carro"></div>
+      <div class="linha"><label>Ano</label><input class="p" id="ano" type="number" min="1900" max="2100"></div>
+    </div>
+    <div class="col">
+      <h2 class="sec">Agendamento</h2>
+      <div class="linha"><label>Data do agendamento</label><input class="m" id="dataAgendamento" type="date"></div>
+      <div class="linha"><label>Forma de pagamento</label>
+        <select class="m" id="pagamento">
+          <option value="">Selecione</option><option value="PIX">Pix</option><option value="DINHEIRO">Dinheiro</option>
+          <option value="DEBITO">Débito</option><option value="CREDITO">Crédito</option></select></div>
+      <div class="linha"><label>Acréscimo de crédito</label><input class="p cinza" id="acrescimo" readonly value="Não"></div>
+      <div class="linha"><label>Reclamação do cliente</label></div>
+      <textarea id="reclamacao"></textarea>
+    </div>
+  </div>
+  <div class="rodape"><span id="msg"></span>
+    <a class="btn sec2" id="irChecklist" style="display:none">Abrir checklist deste atendimento</a>
+    <button class="sec2" id="novo">Novo</button><button id="salvar">Salvar atendimento</button></div>
+</div>
+
+<div class="modal">
+  <header><h1>Atendimentos</h1></header>
+  <div class="corpo uma"><div class="col">
+    <table class="lista"><thead><tr><th>Agendamento</th><th>Cliente</th><th>Veículo</th><th>Pagamento</th><th>Reclamação</th><th></th></tr></thead>
+    <tbody id="lista"></tbody></table></div></div>
+</div>
+
+<script src="erp.js"></script>
+<script>
+menu("atendimento.html");
+let clientes = {};
+
+// mesma regra do backend: pagamento no crédito marca acréscimo
+document.getElementById("pagamento").onchange = () =>
+  set("acrescimo", val("pagamento") === "CREDITO" ? "Sim" : "Não");
+
+function formatarData(iso) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(iso || "") ? iso.split("-").reverse().join("/") : (iso || "");
+}
+
+async function carregar() {
+  let lista = [];
+  try {
+    const cs = await pegarJson("/api/clientes");
+    clientes = Object.fromEntries(cs.map(c => [c.id, c]));
+    const sel = document.getElementById("clienteId"), atual = sel.value;
+    sel.innerHTML = '<option value="">Selecione o cliente</option>' +
+      cs.sort((a, b) => (a.nome || "").localeCompare(b.nome || ""))
+        .map(c => `<option value="${esc(c.id)}">${esc(c.nome)}${c.telefone ? " - " + esc(c.telefone) : ""}</option>`).join("");
+    sel.value = atual;
+    lista = await pegarJson("/api/atendimentos");
+  } catch (e) { msg("Não foi possível carregar os dados.", "erro"); }
+
+  lista.sort((a, b) => (b.dataAgendamento || "").localeCompare(a.dataAgendamento || ""));
+  document.getElementById("lista").innerHTML = lista.map(a =>
+    `<tr><td>${esc(formatarData(a.dataAgendamento))}</td>
+     <td>${esc((clientes[a.clienteId] || {}).nome || "(cliente removido)")}</td>
+     <td>${esc([a.marca, a.carro, a.ano || ""].filter(Boolean).join(" "))}</td>
+     <td>${esc(a.pagamento)}${a.acrescimoCredito ? " (acréscimo)" : ""}</td>
+     <td>${esc(a.reclamacao)}</td>
+     <td><a class="btn sec2" href="checklist.html?atendimento=${encodeURIComponent(a.id)}">Checklist</a></td></tr>`).join("")
+    || '<tr><td colspan="6">Nenhum atendimento.</td></tr>';
+}
+
+function limpar() {
+  ["clienteId","marca","carro","ano","dataAgendamento","pagamento","reclamacao"].forEach(id => set(id, ""));
+  set("acrescimo", "Não"); document.getElementById("irChecklist").style.display = "none"; msg("");
+}
+document.getElementById("novo").onclick = limpar;
+
+document.getElementById("salvar").onclick = async e => {
+  e.target.disabled = true; msg("");
+  try {
+    const r = await fetch("/api/atendimentos", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ clienteId: val("clienteId"), marca: val("marca"), carro: val("carro"),
+        ano: Number(val("ano")) || 0, dataAgendamento: val("dataAgendamento"),
+        pagamento: val("pagamento"), reclamacao: val("reclamacao") }) });
+    const t = await r.text();
+    if (!r.ok) { let d = {}; try { d = JSON.parse(t); } catch {} throw new Error(d.erro || "Erro " + r.status); }
+    msg(t, "ok");
+    const id = (t.split("ID:")[1] || "").trim();
+    if (id) { const a = document.getElementById("irChecklist");
+      a.href = "checklist.html?atendimento=" + encodeURIComponent(id); a.style.display = "inline-block"; }
+    carregar();
+  } catch (err) { msg(err.message, "erro"); }
+  e.target.disabled = false;
+};
+carregar();
+</script>
+</body></html>

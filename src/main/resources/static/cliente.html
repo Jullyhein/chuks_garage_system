@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cliente - Chuk's Car Services</title><link rel="stylesheet" href="css/erp.css"></head>
+<body>
+<div class="topo" id="topo"></div>
+
+<div class="modal">
+  <header><h1>Cadastro de cliente</h1><a class="fechar" href="index.html">&#10005;</a></header>
+  <div class="corpo">
+    <div class="col">
+      <h2 class="sec">Dados do cliente</h2>
+      <div class="linha"><label>Nome</label><input class="g" id="nome" maxlength="120"></div>
+      <div class="linha"><label>Telefone (DDD + número)</label><input class="m" id="telefone" maxlength="11" inputmode="numeric" placeholder="11999998888"></div>
+      <div class="linha"><label>E-mail (recebe o checklist para assinar)</label><input class="g" id="email" type="email" maxlength="160"></div>
+    </div>
+    <div class="col">
+      <h2 class="sec">Endereço</h2>
+      <div class="linha"><label>Endereço completo</label></div>
+      <textarea id="endereco" maxlength="250"></textarea>
+    </div>
+  </div>
+  <div class="rodape"><span id="msg"></span>
+    <button class="sec2" id="novo">Novo</button><button id="salvar">Salvar cliente</button></div>
+</div>
+
+<div class="modal">
+  <header><h1>Clientes cadastrados</h1></header>
+  <div class="corpo uma"><div class="col">
+    <table class="lista"><thead><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Endereço</th></tr></thead>
+    <tbody id="lista"></tbody></table></div></div>
+</div>
+
+<script src="erp.js"></script>
+<script>
+menu("cliente.html");
+let idAtual = null, cache = [];
+const CAMPOS = ["nome", "telefone", "email", "endereco"];
+
+function preencher(c) {
+  idAtual = c ? c.id : null;
+  CAMPOS.forEach(id => set(id, c ? c[id] : ""));
+  msg(idAtual ? "Editando cliente cadastrado." : "", "");
+}
+
+async function carregar() {
+  try { cache = await pegarJson("/api/clientes"); } catch { cache = []; }
+  cache.sort((a, b) => (a.nome || "").localeCompare(b.nome || ""));
+  document.getElementById("lista").innerHTML = cache.map((c, i) =>
+    `<tr class="clic" data-i="${i}"><td>${esc(c.nome)}</td><td>${esc(c.telefone)}</td><td>${esc(c.email)}</td><td>${esc(c.endereco)}</td></tr>`).join("")
+    || '<tr><td colspan="4">Nenhum cliente cadastrado.</td></tr>';
+  document.querySelectorAll("#lista tr.clic").forEach(tr => tr.onclick = () => { preencher(cache[tr.dataset.i]); scrollTo(0, 0); });
+}
+
+document.getElementById("novo").onclick = () => preencher(null);
+document.getElementById("salvar").onclick = async e => {
+  e.target.disabled = true; msg("");
+  try {
+    const corpo = {}; CAMPOS.forEach(id => corpo[id] = val(id).trim());
+    const salvo = await enviarJson(idAtual ? "/api/clientes/" + idAtual : "/api/clientes", idAtual ? "PUT" : "POST", corpo);
+    idAtual = salvo.id; msg("Cliente salvo.", "ok"); carregar();
+  } catch (err) { msg(err.message, "erro"); }
+  e.target.disabled = false;
+};
+carregar();
+</script>
+</body></html>
